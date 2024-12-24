@@ -1,0 +1,151 @@
+package UNO;
+
+import java.util.Scanner;
+
+public class Game {
+    private final Deck deck;                // The deck of cards
+    private final Player[] players;         // Array of players
+    private Card topCard;                   // The top card of the discard pile
+    private int currentPlayerIndex;         // The current player's index
+    private boolean direction;              // True for clockwise, false for counter-clockwise
+    private boolean decision;               // True if there is a winner
+    private final Scanner scanner;
+    private Card playedCard;
+
+    // Constructor to initialize the game
+    public Game() {
+        deck = new Deck(); // Initialize the deck
+        scanner = new Scanner(System.in);
+        decision = false;
+
+        // Initialize players (max of 4 players)
+        int numPlayers;
+        System.out.print("Enter the number of players (2-4): ");
+        numPlayers = scanner.nextInt();
+        scanner.nextLine();
+
+        while (numPlayers < 2 || numPlayers > 4) {
+            System.out.print("Enter a valid number of players (2-4): ");
+            numPlayers = scanner.nextInt();
+            scanner.nextLine();
+        }
+
+        players = new Player[numPlayers];
+        for (int i = 0; i < numPlayers; i++) {
+            System.out.print("Enter Player " + (i + 1) + "'s name: ");
+            String playerName = scanner.next();
+            scanner.nextLine();
+            players[i] = new Player(playerName, deck);
+        }
+
+        // Initialize the game
+        currentPlayerIndex = 0;
+        direction = true; // Default direction is clockwise
+        do {
+            topCard = deck.drawCard();
+        } while (topCard == null || !(topCard instanceof NumberCard)); // Ensure the starting card is a NumberCard
+        System.out.println("Game starts with top card: " + topCard);
+    }
+
+    // Method to start the game
+    public void startGame() {
+        while (!decision) {
+            Player currentPlayer = players[currentPlayerIndex];
+            System.out.println("\nTop card: " + topCard);
+            currentPlayer.showHand();
+
+            if (currentPlayer.search(topCard)) {
+                System.out.println("Select the card you want to play (1-" + currentPlayer.getNumberOfCards() + "):");
+                int cardIndex = scanner.nextInt() - 1;
+
+                while (cardIndex < 0 || cardIndex >= currentPlayer.getNumberOfCards()) {
+                    System.out.println("Invalid choice. Try again:");
+                    cardIndex = scanner.nextInt() - 1;
+                }
+
+                playedCard = currentPlayer.chooseCardToPlay(cardIndex, topCard);
+                while (playedCard == null) {
+                    System.out.println("Card cannot be played. Choose another card:");
+                    cardIndex = scanner.nextInt() - 1;
+                    playedCard = currentPlayer.chooseCardToPlay(cardIndex, topCard);
+                }
+
+                topCard = playedCard;
+                System.out.println(currentPlayer.getName() + " played: " + playedCard);
+
+                // Check if the player has won
+                if (currentPlayer.hasWon()) {
+                    System.out.println(currentPlayer.getName() + " has won the game!");
+                    decision = true;
+                    break;
+                }
+
+                // Handle special and wild card effects
+                handleCardEffect(playedCard);
+            } else {
+                System.out.println(currentPlayer.getName() + " has no playable cards and must draw.");
+                currentPlayer.drawCardForPlayer(deck, decision);
+            }
+
+            if (!decision) {
+                currentPlayerIndex = nextPlayerIndex();
+            }
+        }
+    }
+
+    private void handleCardEffect(Card card) {
+        switch (card.getType()) {
+            case REVERSE:
+                direction = !direction; // Reverse the game direction
+                break;
+
+            case SKIP:
+                currentPlayerIndex = nextPlayerIndex(); // Skip the next player's turn
+                break;
+
+            case DRAW_TWO:
+                currentPlayerIndex = nextPlayerIndex(); // Move to the next player
+                players[currentPlayerIndex].drawCardForPlayer(deck, decision);
+                players[currentPlayerIndex].drawCardForPlayer(deck, decision);
+                break;
+
+            case WILD:
+                System.out.println("Choose a color (RED, GREEN, BLUE, YELLOW):");
+                String chosenColor = scanner.next().toUpperCase(); // Ask player for the color
+                ((WildCard) card).chooseColor(Card.Color.valueOf(chosenColor)); // Update the card's color
+                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+
+                // Update the topCard to reflect the chosen color
+                topCard = new WildCard(Card.Color.valueOf(chosenColor), card.getType());
+                break;
+
+            case WILD_DRAW_FOUR:
+                System.out.println("Choose a color (RED, GREEN, BLUE, YELLOW):");
+                chosenColor = scanner.next().toUpperCase();
+                ((WildCard) card).chooseColor(Card.Color.valueOf(chosenColor));
+                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+                topCard = new WildCard(Card.Color.valueOf(chosenColor), card.getType());
+                currentPlayerIndex = nextPlayerIndex();
+                for (int i = 0; i < 4; i++) {
+                    players[currentPlayerIndex].drawCardForPlayer(deck, decision);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private int nextPlayerIndex() {
+        if (direction) {
+            return (currentPlayerIndex + 1) % players.length;
+        } else {
+            return (currentPlayerIndex - 1 + players.length) % players.length;
+        }
+    }
+
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.startGame();
+    }
+}
