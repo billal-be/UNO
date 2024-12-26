@@ -2,6 +2,8 @@ package UNO;
 
 import java.util.Scanner;
 
+
+
 public class Game {
     private final Deck deck;                // The deck of cards
     private final Player[] players;         // Array of players
@@ -9,14 +11,23 @@ public class Game {
     private int currentPlayerIndex;         // The current player's index
     private boolean direction;              // True for clockwise, false for counter-clockwise
     private boolean decision;               // True if there is a winner
+    private boolean draw;
     private final Scanner scanner;
     private Card playedCard;
+    
+    public boolean getDraw() {
+		return draw;
+	}
 
+	public boolean setDraw(boolean draw) {
+		this.draw = draw;
+		return draw;
+	}
     // Constructor to initialize the game
     public Game() {
         deck = new Deck(); // Initialize the deck
         scanner = new Scanner(System.in);
-        decision = false;
+        setDraw(false);
 
         // Initialize players (max of 4 players)
         int numPlayers;
@@ -58,7 +69,7 @@ public class Game {
                 System.out.println("Select the card you want to play (1-" + currentPlayer.getNumberOfCards() + "):");
                 int cardIndex = scanner.nextInt() - 1;
 
-                while (cardIndex < 0 || cardIndex >= currentPlayer.getNumberOfCards()) {
+                while (cardIndex <= 0 || cardIndex >= currentPlayer.getNumberOfCards()) {
                     System.out.println("Invalid choice. Try again:");
                     cardIndex = scanner.nextInt() - 1;
                 }
@@ -84,12 +95,24 @@ public class Game {
                 handleCardEffect(playedCard);
             } else {
                 System.out.println(currentPlayer.getName() + " has no playable cards and must draw.");
-                currentPlayer.drawCardForPlayer(deck, decision);
+                currentPlayer.drawCardForPlayer(deck);
+                if(players[currentPlayerIndex].getlastdrawncard()==null) {
+                	decision=true;
+                	setDraw(true);
+                	break;
+                }
+                Card drawnCard = currentPlayer.chooseCardToPlay((currentPlayer.getcardCount())-1,topCard);
+                if(drawnCard != null && drawnCard.canPlayOn(topCard)) {
+                	topCard = drawnCard; // Update top card with the played card
+                     System.out.println(currentPlayer.getName() + " played:the drawn card " + drawnCard);
+                }
             }
 
-            if (!decision) {
+            
                 currentPlayerIndex = nextPlayerIndex();
-            }
+        }
+        if(getDraw()==true) {
+        	System.out.println("the game end with a draw");        	
         }
     }
 
@@ -105,8 +128,18 @@ public class Game {
 
             case DRAW_TWO:
                 currentPlayerIndex = nextPlayerIndex(); // Move to the next player
-                players[currentPlayerIndex].drawCardForPlayer(deck, decision);
-                players[currentPlayerIndex].drawCardForPlayer(deck, decision);
+                players[currentPlayerIndex].drawCardForPlayer(deck);
+                if(players[currentPlayerIndex].getlastdrawncard()==null) {
+                	decision=true;
+                	setDraw(true);
+                	break;
+                }
+                players[currentPlayerIndex].drawCardForPlayer(deck);
+                if(players[currentPlayerIndex].getlastdrawncard()==null) {
+                	decision=true;
+                	setDraw(true);
+                	break;
+                }
                 break;
 
             case WILD:
@@ -127,7 +160,12 @@ public class Game {
                 topCard = new WildCard(Card.Color.valueOf(chosenColor), card.getType());
                 currentPlayerIndex = nextPlayerIndex();
                 for (int i = 0; i < 4; i++) {
-                    players[currentPlayerIndex].drawCardForPlayer(deck, decision);
+                    players[currentPlayerIndex].drawCardForPlayer(deck);
+                    if(players[currentPlayerIndex].getlastdrawncard()==null) {
+                    	decision=true;
+                    	setDraw(true);
+                    	break;
+                    }
                 }
                 break;
 
