@@ -1,5 +1,7 @@
 package UNO;
 
+
+
 public class Player {
     private final String name; // Player's name
     private Card[] hand = new Card[50]; // Player's hand
@@ -12,7 +14,12 @@ public class Player {
 			numberOfCards++;
         }
     }
-
+    public int getcardCount() {
+    	return numberOfCards;
+    }
+    public Card getlastdrawncard(){
+    	return hand[numberOfCards-1];
+    }
     public String getName() {
         return name;
     }
@@ -27,15 +34,17 @@ public class Player {
     }
 
     // Draw a card from the deck and add it to the player's hand
-    public void drawCardForPlayer(Deck deck, boolean decision) {
+    public void drawCardForPlayer(Deck deck) {
         Card newCard = deck.drawCard();
         if (newCard != null) {
             hand[numberOfCards++] = newCard;
         } else {
-            System.out.println(name + " cannot draw a card because the deck is empty! Game ends in a draw.");
-            decision = true;
+        	System.out.println(name + " cannot draw a card because the deck is empty!");
+            hand[numberOfCards++] = newCard; // Add new card to hand
+            
         }
     }
+  
 
     // Choose a card to play based on matching with the top card
     public Card chooseCardToPlay(int index, Card topCard) {
