@@ -12,6 +12,6 @@ public class NumberCard extends Card {
         // A NumberCard can be played if:
         // 1. Its color matches the top card's color.
         // 2. Its value matches the top card's value.
-        return this.color == topCard.getColor() || this.value == topCard.getValue();
+        return this.getColor() == topCard.getColor() || this.getValue() == topCard.getValue();
     }
 }
