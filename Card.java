@@ -11,9 +11,9 @@ public abstract class Card {
         NUMBER, SKIP, REVERSE, DRAW_TWO, WILD, WILD_DRAW_FOUR
     }
 
-    protected final Color color; // Color of the card
-    protected final Type type;   // Type of the card
-    protected final int value;   // Value of the card (used for NUMBER cards, -1 for others)
+    private Color color; // Color of the card
+    private final Type type;   // Type of the card
+    private final int value;   // Value of the card (used for NUMBER cards, -1 for others)
 
     // Constructor
     public Card(Color color, Type type, int value) {
@@ -27,7 +27,12 @@ public abstract class Card {
         return color;
     }
 
-    // Getter for the card's type
+//    // use to set the chosen color of wild card
+//	public void setColor(Color color) {
+//		this.color = color;
+//	}S
+
+	// Getter for the card's type
     public Type getType() {
         return type;
     }
@@ -45,8 +50,11 @@ public abstract class Card {
     public String toString() {
         if (type == Type.NUMBER) {
             return color + " " + value;
-        } else {
-            return color + " " + type;
+        } else if((type == Type.WILD || type == Type.WILD_DRAW_FOUR) && color == Color.NONE) {
+        		return type.toString();
+			} else {
+				return color + " " + type;
         }
     }
+    
 }

@@ -12,6 +12,6 @@ public class SpecialCard extends Card {
         // A SpecialCard can be played if:
         // 1. Its color matches the top card's color.
         // 2. Its type matches the top card's type.
-        return this.color == topCard.getColor() || this.type == topCard.getType();
+        return this.getColor() == topCard.getColor() || this.getType() == topCard.getType();
     }
 }
