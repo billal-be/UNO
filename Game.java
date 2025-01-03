@@ -106,10 +106,9 @@ public class Game {
                 	topCard = drawnCard; // Update top card with the played card
                      System.out.println(currentPlayer.getName() + " played:the drawn card " + drawnCard);
                 }
-                currentPlayerIndex = nextPlayerIndex();
             }
-
-            
+            // Move to the next player
+            currentPlayerIndex = nextPlayerIndex();
         }
         if(getDraw()==true) {
         	System.out.println("the game end with a draw");        	
