@@ -82,7 +82,9 @@ public class Game {
                 }
 
                 topCard = playedCard;
-                System.out.println(currentPlayer.getName() + " played: " + playedCard);
+                // Handle special and wild card effects
+                handleCardEffect(playedCard);
+                System.out.println(currentPlayer.getName() + " played: " + topCard);
 
                 // Check if the player has won
                 if (currentPlayer.hasWon()) {
@@ -91,8 +93,6 @@ public class Game {
                     break;
                 }
 
-                // Handle special and wild card effects
-                handleCardEffect(playedCard);
             } else {
                 System.out.println(currentPlayer.getName() + " has no playable cards and must draw.");
                 currentPlayer.drawCardForPlayer(deck);
@@ -104,10 +104,11 @@ public class Game {
                 Card drawnCard = currentPlayer.chooseCardToPlay((currentPlayer.getcardCount())-1,topCard);
                 if(drawnCard != null && drawnCard.canPlayOn(topCard)) {
                 	topCard = drawnCard; // Update top card with the played card
-                     System.out.println(currentPlayer.getName() + " played:the drawn card " + drawnCard);
+                	// Handle special and wild card effects
+                    handleCardEffect(drawnCard);
+                     System.out.println(currentPlayer.getName() + " played:the drawn card " + topCard);
                 }
             }
-            // Move to the next player
             currentPlayerIndex = nextPlayerIndex();
         }
         if(getDraw()==true) {
@@ -142,32 +143,32 @@ public class Game {
                 break;
 
             case WILD:
-                System.out.println("Choose a color (1 RED, 2 GREEN, 3 BLUE, 4 YELLOW):");
-                int chosenColor=scanner.nextInt();
-             while (chosenColor<1||chosenColor>4) {
-            	 System.out.println("Choose a color (1 RED, 2 GREEN, 3 BLUE, 4 YELLOW):");
-            	 chosenColor=scanner.nextInt();
-			}
-             switch (chosenColor) {
-			case 1:
-				((WildCard) card).chooseColor(Card.Color.RED); // Update the card's color
-                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
-				break;
-			case 2:
-				((WildCard) card).chooseColor(Card.Color.GREEN); // Update the card's color
-                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
-				break;
-			case 3:
-				((WildCard) card).chooseColor(Card.Color.BLUE); // Update the card's color
-                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
-				break;
-			case 4:
-				((WildCard) card).chooseColor(Card.Color.YELLOW); // Update the card's color
-                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
-				break;
-			default:
-				break;
-			}
+	                System.out.println("Choose a color (1 RED, 2 GREEN, 3 BLUE, 4 YELLOW):");
+	                int chosenColor=scanner.nextInt();
+	             while (chosenColor<1||chosenColor>4) {	
+	            	 System.out.println("Choose a color (1 RED, 2 GREEN, 3 BLUE, 4 YELLOW):");
+	            	 chosenColor=scanner.nextInt();
+	             		}
+	             switch (chosenColor) {
+						case 1:
+							((WildCard) card).chooseColor(Card.Color.RED); // Update the card's color
+			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+							break;
+						case 2:
+							((WildCard) card).chooseColor(Card.Color.GREEN); // Update the card's color
+			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+							break;
+						case 3:
+							((WildCard) card).chooseColor(Card.Color.BLUE); // Update the card's color
+			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+							break;
+						case 4:
+							((WildCard) card).chooseColor(Card.Color.YELLOW); // Update the card's color
+			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+							break;
+						default:
+							break;
+	             }
                 // Update the topCard to reflect the chosen color
                 topCard = new WildCard(((WildCard) card).getChosenColor(), card.getType());
                 break;
@@ -175,31 +176,31 @@ public class Game {
             case WILD_DRAW_FOUR:
                 System.out.println("Choose a color (1 RED, 2 GREEN, 3 BLUE, 4 YELLOW):");
                 chosenColor=scanner.nextInt();
-             while (chosenColor<1||chosenColor>4) {
-            	 System.out.println("Choose a color (1 RED, 2 GREEN, 3 BLUE, 4 YELLOW):");
-            	 chosenColor=scanner.nextInt();
-			}
-             switch (chosenColor) {
-			case 1:
-				((WildCard) card).chooseColor(Card.Color.RED); // Update the card's color
-                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
-				break;
-			case 2:
-				((WildCard) card).chooseColor(Card.Color.GREEN); // Update the card's color
-                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
-				break;
-			case 3:
-				((WildCard) card).chooseColor(Card.Color.BLUE); // Update the card's color
-                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
-				break;
-			case 4:
-				((WildCard) card).chooseColor(Card.Color.YELLOW); // Update the card's color
-                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
-				break;
-			default:
-				break;
-			}
-             topCard = new WildCard(((WildCard) card).getChosenColor(), card.getType());
+	             while (chosenColor<1||chosenColor>4) {
+	            	 System.out.println("Choose a color (1 RED, 2 GREEN, 3 BLUE, 4 YELLOW):");
+	            	 chosenColor=scanner.nextInt();
+				}
+	             switch (chosenColor) {
+						case 1:
+							((WildCard) card).chooseColor(Card.Color.RED); // Update the card's color
+			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+							break;
+						case 2:
+							((WildCard) card).chooseColor(Card.Color.GREEN); // Update the card's color
+			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+							break;
+						case 3:
+							((WildCard) card).chooseColor(Card.Color.BLUE); // Update the card's color
+			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+							break;
+						case 4:
+							((WildCard) card).chooseColor(Card.Color.YELLOW); // Update the card's color
+			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
+							break;
+						default:
+							break;
+	             }
+	             	topCard = new WildCard(((WildCard) card).getChosenColor(), card.getType());
                 currentPlayerIndex = nextPlayerIndex();
                 for (int i = 0; i < 4; i++) {
                     players[currentPlayerIndex].drawCardForPlayer(deck);
