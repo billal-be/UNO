@@ -70,12 +70,18 @@ public class Deck {
 		System.out.println("The deck is empty!");
 		return null; // Return null if the deck is empty
 	}
-
+	
 	/*
-	 * these method are for testing public void showDeck() { for (int i = 0; i <
-	 * cards.length; i++) { System.out.println("Card " + i + ": " + cards[i]); } }
-	 * 
-	 * public static void main(String[] args) { Deck deck = new Deck();
-	 * deck.showDeck(); }
-	 */
+	 * these method are for testing
+		public void showDeck() {
+			for (int i = 0; i < cards.length; i++) {
+				System.out.println("Card " + i + ": " + cards[i]);
+			}
+		}
+
+		public static void main(String[] args) {
+			Deck deck = new Deck();
+			deck.showDeck();
+		}
+	*/
 }
