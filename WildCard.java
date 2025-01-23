@@ -1,28 +1,26 @@
 package UNO;
 
 public class WildCard extends Card {
-    private Color chosenColor; // The color chosen after playing this card
+	private Color chosenColor; // The color selected after playing the WildCard
 
-    // Constructor: Initializes a WildCard with a specific type
-    public WildCard(Color color, Type type){
-        super(color, type, -1);
-    }
-    
-    // Implementation of the abstract method canPlayOn
-    @Override
-    public boolean canPlayOn(Card topCard) {
-        // A WildCard can always be played
-        return true;
-    }
+	// Constructor: Initializes a WildCard with a given color and type
+	public WildCard(Color color, Type type) {
+		super(color, type, -1);
+	}
 
-    // Sets the chosen color for the wild card
-    public void chooseColor(Color color) {
-        this.chosenColor = color;
-    }
+	// Implementation of the abstract method canPlayOn
+	@Override
+	public boolean canPlayOn(Card topCard) {
+		return true;
+	}
 
-    // Gets the chosen color of the wild card
-    public Color getChosenColor() {
-        return chosenColor;
-    }
+	// Sets the chosen color for the wild card
+	public void setchoosenColor(Color color) {
+		this.chosenColor = color;
+	}
+
+	// Gets the chosen color of the wild card
+	public Color getChosenColor() {
+		return chosenColor;
+	}
 }
-
