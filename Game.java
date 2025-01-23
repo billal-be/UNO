@@ -22,6 +22,14 @@ public class Game {
 	public void setDraw(boolean draw) {
 		this.draw = draw;
 	}
+	public boolean playerexist(String name,int r) {
+		for (int i = 0; i < r; i++) {
+			if(players[i].getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
     // Constructor to initialize the game
     public Game() {
         deck = new Deck(); // Initialize the deck
@@ -44,6 +52,13 @@ public class Game {
         for (int i = 0; i < numPlayers; i++) {
             System.out.print("Enter Player " + (i + 1) + "'s name: ");
             String playerName = scanner.next();
+            if(i>=1 && playerexist(playerName,i)) {
+            	while(playerexist(playerName,i)) {
+            	System.out.print("player allready exist choose enother name for player " + (i + 1) + " ");
+            	playerName = scanner.next();
+            	
+            	}
+            }
             scanner.nextLine();
             players[i] = new Player(playerName, deck);
         }
