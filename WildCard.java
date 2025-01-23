@@ -3,7 +3,7 @@ package UNO;
 public class WildCard extends Card {
 	private Color chosenColor; // The color selected after playing the WildCard
 
-	// Constructor: Creates a WildCard with a specified color and type
+	// Constructor: Initializes a WildCard with a given color and type
 	public WildCard(Color color, Type type) {
 		super(color, type, -1);
 	}
