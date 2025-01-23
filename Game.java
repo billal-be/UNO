@@ -1,5 +1,6 @@
 package UNO;
 
+import java.util.Iterator;
 import java.util.Scanner;
 
 
@@ -14,6 +15,9 @@ public class Game {
     private boolean draw;
     private final Scanner scanner;
     private Card playedCard;
+    private int ai;
+    private int numPlayers;
+    private String playerName;
     
     public boolean getDraw() {
 		return draw;
@@ -35,33 +39,48 @@ public class Game {
         deck = new Deck(); // Initialize the deck
         scanner = new Scanner(System.in);
         setDraw(false);
+        do {
+        	System.out.print("if you want to play against your friend enter 1 against bot enter 2 ");
+        	ai = scanner.nextInt();
+		} while (ai>2||ai<1);
+        switch (ai) {
+		case 2:
+			players = new Player[2];
+	            System.out.print("Enter the Player name: ");
+	            playerName = scanner.next();
+	            players[0] = new Player(playerName, deck);
+	            players[1] = new BotPlayer("Bot", deck);
+			break;
+		default:
+	        // Initialize players (max of 4 players)
+	        
+	        System.out.print("Enter the number of players (2-4): ");
+	        numPlayers = scanner.nextInt();
+	        scanner.nextLine();
 
-        // Initialize players (max of 4 players)
-        int numPlayers;
-        System.out.print("Enter the number of players (2-4): ");
-        numPlayers = scanner.nextInt();
-        scanner.nextLine();
+	        while (numPlayers < 2 || numPlayers > 4) {
+	            System.out.print("Enter a valid number of players (2-4): ");
+	            numPlayers = scanner.nextInt();
+	            scanner.nextLine();
+	        }
 
-        while (numPlayers < 2 || numPlayers > 4) {
-            System.out.print("Enter a valid number of players (2-4): ");
-            numPlayers = scanner.nextInt();
-            scanner.nextLine();
-        }
+	        players = new Player[numPlayers];
+	        for (int i = 0; i < numPlayers; i++) {
+	            System.out.print("Enter Player " + (i + 1) + "'s name: ");
+	            playerName = scanner.next();
+	            if(i>=1 && playerexist(playerName,i)) {
+	            	while(playerexist(playerName,i)) {
+	            	System.out.print("player allready exist choose enother name for player " + (i + 1) + " ");
+	            	playerName = scanner.next();
+	            	
+	            	}
+	            }
+	            scanner.nextLine();
+	            players[i] = new Player(playerName, deck);
+	        	}
+			break;
+		}
 
-        players = new Player[numPlayers];
-        for (int i = 0; i < numPlayers; i++) {
-            System.out.print("Enter Player " + (i + 1) + "'s name: ");
-            String playerName = scanner.next();
-            if(i>=1 && playerexist(playerName,i)) {
-            	while(playerexist(playerName,i)) {
-            	System.out.print("player allready exist choose enother name for player " + (i + 1) + " ");
-            	playerName = scanner.next();
-            	
-            	}
-            }
-            scanner.nextLine();
-            players[i] = new Player(playerName, deck);
-        }
 
         // Initialize the game
         currentPlayerIndex = 0;
@@ -78,52 +97,62 @@ public class Game {
             Player currentPlayer = players[currentPlayerIndex];
             System.out.println("\nTop card: " + topCard);
             currentPlayer.showHand();
-
+            
+            
             if (currentPlayer.search(topCard)) {
-            	currentPlayer.validindex(topCard);
-                System.out.println("Select the card you want to play (1-" + currentPlayer.getNumberOfCards() + "):");
-                int cardIndex = scanner.nextInt() - 1;
+            	if(currentPlayer instanceof BotPlayer) {
+                	// Bot's turn
+                    playedCard = currentPlayer.chooseCardToPlay(0, topCard);
+                    if (playedCard != null) {
+                        topCard = playedCard;
+                        handleCardEffect(playedCard);
+                        System.out.println(currentPlayer.getName() + " played: " + topCard);
+                    }}else {
+		            	currentPlayer.validindex(topCard);
+		                System.out.println("Select the card you want to play (1-" + currentPlayer.getNumberOfCards() + "):");
+		                int cardIndex = scanner.nextInt() - 1;
+		
+		                while (cardIndex < 0 || cardIndex >= currentPlayer.getNumberOfCards()) {
+		                    System.out.println("Invalid choice. Try again:");
+		                    cardIndex = scanner.nextInt() - 1;
+		                }
+		
+		                playedCard = currentPlayer.chooseCardToPlay(cardIndex, topCard);
+		                while (playedCard == null) {
+		                    System.out.println("Card cannot be played. Choose another card:");
+		                    cardIndex = scanner.nextInt() - 1;
+		                    playedCard = currentPlayer.chooseCardToPlay(cardIndex, topCard);
+		                }
+		
+		                topCard = playedCard;
+		                // Handle special and wild card effects
+		                handleCardEffect(playedCard);
+		                System.out.println(currentPlayer.getName() + " played: " + topCard);
+		
+		                // Check if the player has won
+		                if (currentPlayer.hasWon()) {
+		                    System.out.println(currentPlayer.getName() + " has won the game!");
+		                    decision = true;
+		                    break;
+		                }
 
-                while (cardIndex < 0 || cardIndex >= currentPlayer.getNumberOfCards()) {
-                    System.out.println("Invalid choice. Try again:");
-                    cardIndex = scanner.nextInt() - 1;
-                }
-
-                playedCard = currentPlayer.chooseCardToPlay(cardIndex, topCard);
-                while (playedCard == null) {
-                    System.out.println("Card cannot be played. Choose another card:");
-                    cardIndex = scanner.nextInt() - 1;
-                    playedCard = currentPlayer.chooseCardToPlay(cardIndex, topCard);
-                }
-
-                topCard = playedCard;
-                // Handle special and wild card effects
-                handleCardEffect(playedCard);
-                System.out.println(currentPlayer.getName() + " played: " + topCard);
-
-                // Check if the player has won
-                if (currentPlayer.hasWon()) {
-                    System.out.println(currentPlayer.getName() + " has won the game!");
-                    decision = true;
-                    break;
-                }
-
-            } else {
-                System.out.println(currentPlayer.getName() + " has no playable cards and must draw.");
-                currentPlayer.drawCardForPlayer(deck);
-                if(players[currentPlayerIndex].getlastdrawncard()==null) {
-                	decision=true;
-                	setDraw(true);
-                	break;
-                }
-                Card drawnCard = currentPlayer.chooseCardToPlay((currentPlayer.getNumberOfCards())-1,topCard);
-                if(drawnCard != null && drawnCard.canPlayOn(topCard)) {
-                	topCard = drawnCard; // Update top card with the played card
-                	// Handle special and wild card effects
-                    handleCardEffect(drawnCard);
-                     System.out.println(currentPlayer.getName() + " played:the drawn card " + topCard);
-                }
-            }
+                    }
+            	} else {
+				         System.out.println(currentPlayer.getName() + " has no playable cards and must draw.");
+				         currentPlayer.drawCardForPlayer(deck);
+				         if(players[currentPlayerIndex].getlastdrawncard()==null) {
+				        	 decision=true;
+				        	 setDraw(true);
+				             	break;
+				            }
+				          Card drawnCard = currentPlayer.chooseCardToPlay((currentPlayer.getNumberOfCards())-1,topCard);
+				          if(drawnCard != null && drawnCard.canPlayOn(topCard)) {
+				        	  topCard = drawnCard; // Update top card with the played card
+				               // Handle special and wild card effects
+				               handleCardEffect(drawnCard);
+				               System.out.println(currentPlayer.getName() + " played:the drawn card " + topCard);
+				             }
+            		}
             currentPlayerIndex = nextPlayerIndex();
         }
         if(getDraw()==true) {
@@ -166,19 +195,19 @@ public class Game {
 	             		}
 	             switch (chosenColor) {
 						case 1:
-							((WildCard) card).setchoosenColor(Card.Color.RED); // Update the card's color
+							((WildCard) card).chooseColor(Card.Color.RED); // Update the card's color
 			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
 							break;
 						case 2:
-							((WildCard) card).setchoosenColor(Card.Color.GREEN); // Update the card's color
+							((WildCard) card).chooseColor(Card.Color.GREEN); // Update the card's color
 			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
 							break;
 						case 3:
-							((WildCard) card).setchoosenColor(Card.Color.BLUE); // Update the card's color
+							((WildCard) card).chooseColor(Card.Color.BLUE); // Update the card's color
 			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
 							break;
 						case 4:
-							((WildCard) card).setchoosenColor(Card.Color.YELLOW); // Update the card's color
+							((WildCard) card).chooseColor(Card.Color.YELLOW); // Update the card's color
 			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
 							break;
 						default:
@@ -197,19 +226,19 @@ public class Game {
 				}
 	             switch (chosenColor) {
 						case 1:
-							((WildCard) card).setchoosenColor(Card.Color.RED); // Update the card's color
+							((WildCard) card).chooseColor(Card.Color.RED); // Update the card's color
 			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
 							break;
 						case 2:
-							((WildCard) card).setchoosenColor(Card.Color.GREEN); // Update the card's color
+							((WildCard) card).chooseColor(Card.Color.GREEN); // Update the card's color
 			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
 							break;
 						case 3:
-							((WildCard) card).setchoosenColor(Card.Color.BLUE); // Update the card's color
+							((WildCard) card).chooseColor(Card.Color.BLUE); // Update the card's color
 			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
 							break;
 						case 4:
-							((WildCard) card).setchoosenColor(Card.Color.YELLOW); // Update the card's color
+							((WildCard) card).chooseColor(Card.Color.YELLOW); // Update the card's color
 			                System.out.println("Chosen color: " + ((WildCard) card).getChosenColor());
 							break;
 						default:
@@ -234,9 +263,9 @@ public class Game {
 
     private int nextPlayerIndex() {
         if (direction) {
-            return (currentPlayerIndex + 1) % players.length;
+            return (currentPlayerIndex + 1) % (players.length-1);
         } else {
-            return (currentPlayerIndex - 1 + players.length) % players.length;
+            return (currentPlayerIndex - 1 + (players.length-1)) % (players.length-1);
         }
     }
 
