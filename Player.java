@@ -14,9 +14,9 @@ public class Player {
 			numberOfCards++;
         }
     }
-    public int getcardCount() {
-    	return numberOfCards;
-    }
+    //public int getcardCount() {
+    //	return numberOfCards;
+    //}
     public Card getlastdrawncard(){
     	return hand[numberOfCards-1];
     }
@@ -57,7 +57,23 @@ public class Player {
         }
         return null; // No matching card found
     }
-
+    public void validindex(Card topCard) {
+		Card[] validindex=new Card[50];
+		int n=0;
+		int[] v=new int[50];
+		for (int i = 0; i < numberOfCards; i++) {
+	        if (hand[i].canPlayOn(topCard)) {
+	            validindex[n]=hand[i];
+	            v[n]=i+1;
+	            n++;
+	        }
+		}
+		System.out.print("you can play:  ");
+		for(int r = 0; r < n; r++) {
+			System.out.print(" " + (v[r]) + "| " + validindex[r] + " | ");
+		}
+		System.out.println();
+	}
     // Search for playable cards
     public boolean search(Card topCard) {
         for (int i = 0; i < numberOfCards; i++) {
