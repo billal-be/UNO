@@ -97,7 +97,7 @@ public class Game {
 		System.out.println("Game starts with top card: " + topCard);
 	}
 
-	// Displays the UNO game title screen with ASCII art and a welcome message.
+	// Displays the UNO game title screen with ASCII art and a welcome message
 	private void displayTitleScreen() {
 		System.out.println("=================================");
 		System.out.println("      WELCOME TO THE GAME OF     ");
