@@ -14,9 +14,9 @@ public class Player {
 			numberOfCards++;
         }
     }
-    //public int getcardCount() {
-    //	return numberOfCards;
-    //}
+    public Card gethand(int i){
+    	return hand[i];
+    }
     public Card getlastdrawncard(){
     	return hand[numberOfCards-1];
     }
@@ -57,7 +57,7 @@ public class Player {
         }
         return null; // No matching card found
     }
-    public void validindex(Card topCard) {
+	public void validindex(Card topCard) {
 		Card[] validindex=new Card[50];
 		int n=0;
 		int[] v=new int[50];
@@ -85,11 +85,11 @@ public class Player {
     }
 
     // Remove a card from the player's hand
-    private void removeCard(int index) {
+    public void removeCard(int index) {
         for (int i = index; i < numberOfCards - 1; i++) {
             hand[i] = hand[i + 1];
         }
-        hand[--numberOfCards] = null;
+        hand[--numberOfCards] = null; //Remove a card and decrement the numberOfCards
     }
 
     // Display the player's hand
