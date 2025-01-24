@@ -163,7 +163,10 @@ public class Game {
     private void handleCardEffect(Card card) {
         switch (card.getType()) {
             case REVERSE:
-                direction = !direction; // Reverse the game direction
+               direction = !direction; // Reverse the game direction
+                if(players.length==2) {
+                	currentPlayerIndex = nextPlayerIndex();
+                }
                 break;
 
             case SKIP:
@@ -261,11 +264,11 @@ public class Game {
         }
     }
 
-    private int nextPlayerIndex() {
+   private int nextPlayerIndex() {
         if (direction) {
-            return (currentPlayerIndex + 1) % (players.length-1);
+            return (currentPlayerIndex + 1) % (players.length);
         } else {
-            return (currentPlayerIndex - 1 + (players.length-1)) % (players.length-1);
+            return (currentPlayerIndex - 1 + (players.length)) % (players.length);
         }
     }
 
